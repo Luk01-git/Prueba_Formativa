@@ -1,9 +1,6 @@
 import sqlite3
-from datetime import date
-import hashlib
 
 class DatabaseManager:
-    """Gestiona la persistencia utilizando la librería oficial sqlite3."""
     def __init__(self, db_name="ecotech_solutions.db"):
         self.db_name = db_name
         self.conexion = None
@@ -11,7 +8,6 @@ class DatabaseManager:
     def conectar(self):
         try:
             self.conexion = sqlite3.connect(self.db_name)
-            print(f"[BD] Prueba de conexión exitosa a la base de datos: {self.db_name}")
             return self.conexion
         except sqlite3.Error as e:
             print(f"[BD] Error al conectar a la base de datos: {e}")
@@ -28,10 +24,43 @@ class DatabaseManager:
                     salario REAL NOT NULL
                 )
             ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS Usuario (
+                    idUsuario TEXT PRIMARY KEY,
+                    username TEXT UNIQUE NOT NULL,
+                    contrasenaHash TEXT NOT NULL,
+                    idEmpleado TEXT,
+                    FOREIGN KEY(idEmpleado) REFERENCES Empleado(idEmpleado)
+                )
+            ''')
             self.conexion.commit()
-            print("[BD] Estructura de tablas inicializada correctamente.")
+
+    def registrar_empleado_y_usuario(self, id_emp, nombre, correo, salario, id_usr, username, contrasena_hash):
+        if self.conexion:
+            cursor = self.conexion.cursor()
+            try:
+                cursor.execute('INSERT INTO Empleado VALUES (?, ?, ?, ?)', 
+                               (id_emp, nombre, correo, salario))
+                cursor.execute('INSERT INTO Usuario VALUES (?, ?, ?, ?)', 
+                               (id_usr, username, contrasena_hash, id_emp))
+                
+                self.conexion.commit()
+                return True
+            except sqlite3.IntegrityError:
+                return False 
+
+    def obtener_datos_login(self, username):
+        if self.conexion:
+            cursor = self.conexion.cursor()
+            cursor.execute('''
+                SELECT u.contrasenaHash, e.idEmpleado, e.nombre, e.correo, e.salario 
+                FROM Usuario u
+                JOIN Empleado e ON u.idEmpleado = e.idEmpleado
+                WHERE u.username = ?
+            ''', (username,))
+            return cursor.fetchone()
+        return None
 
     def cerrar_conexion(self):
         if self.conexion:
             self.conexion.close()
-            print("[BD] Conexión cerrada.")

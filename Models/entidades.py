@@ -1,7 +1,6 @@
 from datetime import date
 
 class RegistroTiempo:
-    """Administra los registros transaccionales de horas de un empleado."""
     def __init__(self, idRegistro: str, fecha: date, horas: float):
         self.__idRegistro = idRegistro
         self.__fecha = fecha
@@ -12,11 +11,9 @@ class RegistroTiempo:
         return self.__horas
 
     def validarHoras(self) -> bool:
-        """Valida que las horas cumplan con los límites del negocio."""
         return 0 < self.__horas <= 12
 
 class Proyecto:
-    """Controla los centros de costo e iniciativas de la empresa."""
     def __init__(self, idProyecto: str, nombre: str):
         self.__idProyecto = idProyecto
         self.__nombre = nombre
@@ -38,7 +35,6 @@ class Proyecto:
         return sum(registro.horas for registro in self.__registros_tiempo)
 
 class Empleado:
-    """Modela los atributos laborales y es el actor principal de las actividades."""
     def __init__(self, idEmpleado: str, nombre: str, correo: str, salario: float):
         self.__idEmpleado = idEmpleado
         self.__nombre = nombre
@@ -68,7 +64,6 @@ class Empleado:
             raise ValueError("Las horas ingresadas no son válidas según las reglas del negocio.")
 
 class Departamento:
-    """Contenedor jerárquico que agrupa personal y proyectos."""
     def __init__(self, idDepartamento: str, nombre: str):
         self.__idDepartamento = idDepartamento
         self.__nombre = nombre

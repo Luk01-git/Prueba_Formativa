@@ -1,6 +1,4 @@
 class VistaConsola:
-    """Maneja la interacción con el usuario mediante la consola."""
-    
     def mostrar_menu_inicio(self):
         print("\n" + "="*40)
         print("   SISTEMA ECOTECH - INICIO")
